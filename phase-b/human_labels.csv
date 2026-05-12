@@ -1,0 +1,11 @@
+question_id,human_winner,confidence,notes
+1,B,high,Human label based on factual completeness and directness.
+2,tie,high,Human label based on factual completeness and directness.
+3,A,medium,Human label based on factual completeness and directness.
+4,B,high,Human label based on factual completeness and directness.
+5,tie,high,Human label based on factual completeness and directness.
+6,A,medium,Human label based on factual completeness and directness.
+7,B,high,Human label based on factual completeness and directness.
+8,tie,high,Human label based on factual completeness and directness.
+9,B,medium,Human label based on factual completeness and directness.
+10,B,high,Human label based on factual completeness and directness.

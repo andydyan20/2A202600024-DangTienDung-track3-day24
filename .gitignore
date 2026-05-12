@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local secrets and environment
+.env
+.env.*
+!.env.example
+
+# macOS
+.DS_Store
+
+# Swift/PDF extraction cache
+.swift-module-cache/
+
+# Local rendered preview artifact
+lab24-page.png
+
+lab24-docs/

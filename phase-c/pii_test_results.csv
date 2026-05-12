@@ -1,0 +1,11 @@
+case_type,input,redacted_marker,pii_detected,latency_ms
+email,Contact me at student@vinuni.edu.vn,[EMAIL],True,12
+phone_vn,My phone is 0912345678,[PHONE],True,10
+cc,Card 4111 1111 1111 1111,[CREDIT_CARD],True,11
+id,CCCD 012345678901,[ID_NUMBER],True,9
+address,I live at 123 Nguyen Trai Street,[ADDRESS],True,13
+mixed,Email a@b.com and phone +84987654321,[EMAIL] [PHONE],True,15
+empty,,,True,1
+long,hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello test@example.com,[EMAIL],True,22
+vn_name,Toi la Nguyen Van A,Toi la Nguyen Van A,False,8
+safe,Explain RAGAS metrics,Explain RAGAS metrics,False,6

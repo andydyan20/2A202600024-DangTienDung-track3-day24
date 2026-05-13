@@ -16,7 +16,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Generate deterministic lab artifacts
-        run: python scripts/generate_lab24_artifacts.py
+        run: python scripts/generate_lab24_artifacts.py --offline
       - name: Run RAGAS evaluation gate
         run: |
           python scripts/run_eval.py \
@@ -32,4 +32,3 @@ jobs:
           path: |
             phase-a/ragas_results.csv
             phase-a/ragas_summary.json
-

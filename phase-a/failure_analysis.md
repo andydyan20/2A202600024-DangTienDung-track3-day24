@@ -4,16 +4,16 @@
 
 | # | Question | Type | F | AR | CP | CR | Avg | Cluster |
 |---|---|---|---:|---:|---:|---:|---:|---|
-| 1 | How should latency be compared with and without guardrails? | multi_context | 0.554 | 0.625 | 0.31 | 0.53 | 0.505 | C1 |
-| 2 | What components are needed for a production evaluation blueprint? | multi_context | 0.505 | 0.67 | 0.385 | 0.464 | 0.506 | C1 |
-| 3 | How can low RAGAS scores guide retriever improvements? | reasoning | 0.612 | 0.645 | 0.375 | 0.504 | 0.534 | C2 |
-| 4 | How can low RAGAS scores guide retriever improvements? | reasoning | 0.541 | 0.645 | 0.425 | 0.526 | 0.534 | C2 |
-| 5 | How do SLO alerts and audit logs support incident response? | multi_context | 0.512 | 0.64 | 0.46 | 0.53 | 0.535 | C1 |
-| 6 | What components are needed for a production evaluation blueprint? | multi_context | 0.559 | 0.67 | 0.435 | 0.486 | 0.537 | C1 |
-| 7 | How should a team reduce continuous evaluation cost? | reasoning | 0.631 | 0.63 | 0.475 | 0.46 | 0.549 | C2 |
-| 8 | What does context recall show about evidence retrieval? | simple | 0.648 | 0.66 | 0.485 | 0.63 | 0.606 | C2 |
-| 9 | Why should guardrail latency be benchmarked? | simple | 0.686 | 0.675 | 0.46 | 0.63 | 0.613 | C2 |
-| 10 | What does context recall show about evidence retrieval? | simple | 0.699 | 0.66 | 0.56 | 0.586 | 0.626 | C3 |
+| 1 | Why should guardrail latency be benchmarked? | simple | 0.63 | 0.963 | 0.25 | 0.25 | 0.523 | C2 |
+| 2 | Why should guardrail latency be benchmarked? | simple | 0.662 | 0.995 | 0.25 | 0.25 | 0.539 | C2 |
+| 3 | How does Cohen's kappa help calibrate an LLM judge? | reasoning | 0.25 | 0.796 | 0.689 | 0.828 | 0.641 | C3 |
+| 4 | How does Cohen's kappa help calibrate an LLM judge? | reasoning | 0.3 | 0.921 | 0.671 | 0.81 | 0.675 | C3 |
+| 5 | How do SLO alerts and audit logs support incident response? | multi_context | 0.286 | 0.895 | 0.645 | 0.895 | 0.680 | C1 |
+| 6 | How does Cohen's kappa help calibrate an LLM judge? | reasoning | 0.269 | 0.957 | 0.707 | 0.846 | 0.695 | C3 |
+| 7 | How do SLO alerts and audit logs support incident response? | multi_context | 0.25 | 0.93 | 0.68 | 0.93 | 0.698 | C1 |
+| 8 | Edited: How should an output guardrail handle unsafe generated conte | simple | 0.992 | 0.563 | 0.492 | 0.792 | 0.710 | C2 |
+| 9 | How can low RAGAS scores guide retriever improvements? | reasoning | 0.587 | 0.92 | 0.626 | 0.72 | 0.713 | C3 |
+| 10 | How should a team reduce continuous evaluation cost? | reasoning | 0.509 | 0.921 | 0.504 | 0.921 | 0.714 | C2 |
 
 ## Clusters Identified
 
@@ -23,7 +23,7 @@
 
 **Examples:** architecture and benchmark questions that combine guardrail, eval, and monitoring concepts.
 
-**Root cause:** The simulated retriever returns one dominant context instead of combining evidence from separate sections.
+**Root cause:** The lexical retriever returns one dominant context instead of combining evidence from separate sections.
 
 **Proposed fix:** Increase `top_k` from 3 to 6, add hybrid BM25 + vector search, and add a cross-encoder reranker.
 

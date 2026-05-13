@@ -5,27 +5,27 @@ question_id,question,accuracy,relevance,conciseness,helpfulness,overall
 4,What does context recall show about evidence retrieval?,4,4,4,4,4.0
 5,Why should input guardrails redact personal information?,4,4,4,4,4.0
 6,What is the purpose of a topic scope validator?,4,4,3,4,3.75
-7,Edited: How should an output guardrail handle unsafe generated content?,4,4,4,4,4.0
-8,Why should guardrail latency be benchmarked?,4,4,4,4,4.0
+7,Edited: How should an output guardrail handle unsafe generated content?,4,3,4,4,3.75
+8,Why should guardrail latency be benchmarked?,3,4,4,3,3.5
 9,What should an audit log capture in a guarded RAG system?,4,4,4,4,4.0
-10,Why are SLOs useful for production RAG monitoring?,4,4,4,4,4.0
+10,Why are SLOs useful for production RAG monitoring?,3,4,4,4,3.75
 11,How does RAGAS faithfulness evaluate an answer?,4,4,4,4,4.0
 12,What does answer relevancy measure in RAGAS?,4,4,3,4,3.75
 13,Why is context precision important for retrieval?,4,4,4,4,4.0
-14,What does context recall show about evidence retrieval?,3,3,4,3,3.25
+14,What does context recall show about evidence retrieval?,4,4,4,4,4.0
 15,Why should input guardrails redact personal information?,4,4,4,4,4.0
 16,What is the purpose of a topic scope validator?,4,4,4,4,4.0
 17,How does an output guardrail protect users?,4,4,4,4,4.0
-18,Why should guardrail latency be benchmarked?,3,3,3,3,3.0
+18,Why should guardrail latency be benchmarked?,3,4,3,3,3.25
 19,What should an audit log capture in a guarded RAG system?,4,4,4,4,4.0
-20,Why are SLOs useful for production RAG monitoring?,4,4,4,4,4.0
+20,Why are SLOs useful for production RAG monitoring?,3,4,4,4,3.75
 21,How does RAGAS faithfulness evaluate an answer?,4,4,4,4,4.0
 22,What does answer relevancy measure in RAGAS?,4,4,4,4,4.0
 23,Why is context precision important for retrieval?,4,4,4,4,4.0
-24,What does context recall show about evidence retrieval?,3,3,3,3,3.0
+24,What does context recall show about evidence retrieval?,4,4,3,4,3.75
 25,Why should input guardrails redact personal information?,4,4,4,4,4.0
-26,Why can pairwise judging be biased by answer order?,4,4,4,4,4.0
+26,Why can pairwise judging be biased by answer order?,3,4,4,4,3.75
 27,How does Cohen's kappa help calibrate an LLM judge?,3,4,4,4,3.75
-28,How can low RAGAS scores guide retriever improvements?,4,4,4,3,3.75
-29,How should a team reduce continuous evaluation cost?,3,3,4,3,3.25
+28,How can low RAGAS scores guide retriever improvements?,3,4,4,4,3.75
+29,How should a team reduce continuous evaluation cost?,4,4,4,4,4.0
 30,Why should CI block a merge when faithfulness drops?,3,4,3,4,3.5

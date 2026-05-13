@@ -1,7 +1,9 @@
 {
-  "faithfulness": 0.754,
-  "answer_relevancy": 0.766,
-  "context_precision": 0.606,
-  "context_recall": 0.664,
-  "estimated_eval_cost_usd": 3.74
+  "faithfulness": 0.772,
+  "answer_relevancy": 0.9,
+  "context_precision": 0.725,
+  "context_recall": 0.863,
+  "estimated_eval_cost_usd": 0.0,
+  "rag_model": "llama3.2:latest",
+  "questions_evaluated": 50
 }

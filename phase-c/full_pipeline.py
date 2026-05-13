@@ -1,23 +1,29 @@
 import asyncio
+import argparse
 import statistics
+import sys
 import time
+from pathlib import Path
 
 from input_guard import InputGuard, TopicGuard, refuse_response
 from output_guard import OutputGuard
 
 
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+
+from rag_pipeline import DEFAULT_MODEL, LocalRAGPipeline
+
+
 input_guard = InputGuard()
 topic_guard = TopicGuard()
 output_guard = OutputGuard()
+rag_pipeline = LocalRAGPipeline(model=DEFAULT_MODEL)
 
 
 async def rag_pipeline_async(query):
-    await asyncio.sleep(0.01)
-    return (
-        "A production RAG evaluation stack should combine RAGAS metrics, "
-        "LLM-as-judge calibration, input/output guardrails, latency measurement, "
-        "audit logging, and SLO alerts."
-    )
+    result = await asyncio.to_thread(rag_pipeline.answer, query)
+    return result["answer"]
 
 
 async def audit_log(user_input, answer, timings):
@@ -79,5 +85,7 @@ async def benchmark(n=100):
 
 
 if __name__ == "__main__":
-    asyncio.run(benchmark())
-
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--n", type=int, default=5, help="Number of live Ollama RAG requests to run.")
+    args = parser.parse_args()
+    asyncio.run(benchmark(args.n))

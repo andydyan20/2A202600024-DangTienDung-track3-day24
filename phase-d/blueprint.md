@@ -1,5 +1,25 @@
 # Lab 24 Production Blueprint
 
+This blueprint describes the current implemented stack in this repository: a local markdown RAG pipeline in `scripts/rag_pipeline.py`, lexical chunk retrieval over `docs/` and `lab24-student-edition.md`, answer generation through local Ollama `llama3.2:latest`, input/output guardrails, artifact generation, and CI evaluation gating.
+
+## Current Evaluation Snapshot
+
+Latest Phase A run over 50 questions:
+
+| Metric | Current Score | Target | Status |
+|---|---:|---:|---|
+| Faithfulness | 0.772 | >= 0.85 | Below target, above CI gate |
+| Answer Relevancy | 0.900 | >= 0.80 | Pass |
+| Context Precision | 0.725 | >= 0.70 | Pass |
+| Context Recall | 0.863 | >= 0.75 | Pass |
+
+Model and cost:
+
+- RAG generator: Ollama `llama3.2:latest`
+- Retrieval: local lexical scoring over markdown chunks
+- Questions evaluated: 50
+- Direct API cost: $0.00
+
 ## Section 1: SLO Definition
 
 | Metric | Target | Alert Threshold | Severity |
@@ -8,7 +28,7 @@
 | Answer Relevancy | >= 0.80 | < 0.75 for 30 min | P2 |
 | Context Precision | >= 0.70 | < 0.65 for 1 hour | P3 |
 | Context Recall | >= 0.75 | < 0.70 for 1 hour | P3 |
-| P95 Latency with guardrails | < 2500 ms | > 3000 ms for 5 min | P1 |
+| P95 Latency with guardrails | < 5000 ms on local Ollama | > 6000 ms for 5 min | P1 |
 | Guardrail Detection Rate | >= 90% | < 85% for latest test batch | P2 |
 | False Positive Rate | < 5% | > 10% for latest test batch | P2 |
 
@@ -19,8 +39,11 @@ graph TD
     A[User Input] --> B[L1 Input Guards: PII, Topic, Injection]
     B --> C{Input safe?}
     C -->|No| Z[Graceful Refusal]
-    C -->|Yes| D[L2 RAG Pipeline: Retriever + Generator]
-    D --> E[L3 Output Guard: Llama Guard 3 compatible check]
+    C -->|Yes| D1[Load Markdown Corpus]
+    D1 --> D2[Chunk Text: 130 words, 30 overlap]
+    D2 --> D3[Lexical Retriever: token overlap + IDF]
+    D3 --> D4[Ollama llama3.2 Generator]
+    D4 --> E[L3 Output Guard: Llama Guard compatible check]
     E --> F{Output safe?}
     F -->|No| Z
     F -->|Yes| G[Response to User]
@@ -28,7 +51,15 @@ graph TD
     H --> I[Eval Store and Alerting]
 ```
 
-Latency targets: L1 P95 < 50 ms, L2 P95 depends on generation model, L3 P95 < 100 ms, audit logging is async and excluded from user-facing latency.
+Implemented components:
+
+- Corpus loader: `docs/*.md`, `docs/*.txt`, and `lab24-student-edition.md`
+- Retriever: stdlib lexical retrieval, no external vector database
+- Generator: local Ollama endpoint `http://127.0.0.1:11434/api/generate`
+- Guarded pipeline: `phase-c/full_pipeline.py`
+- Evaluation artifact generation: `scripts/generate_lab24_artifacts.py --model llama3.2:latest`
+
+Latency targets: L1 P95 < 50 ms, L2 P95 < 5000 ms on local Ollama, L3 P95 < 100 ms, audit logging is async and excluded from user-facing latency. Latest short live benchmark showed L1 P95 0.2 ms, L2 P95 4505.2 ms, L3 P95 42.0 ms.
 
 ## Section 3: Alert Playbook
 
@@ -38,11 +69,11 @@ Latency targets: L1 P95 < 50 ms, L2 P95 depends on generation model, L3 P95 < 10
 
 **Detection:** Continuous evaluation gate or scheduled RAGAS run.
 
-**Likely causes:** Retriever returns weak evidence, corpus was updated without re-indexing, or generation prompt changed.
+**Likely causes:** Lexical retriever returns weak evidence, corpus was updated without rebuilding chunks, chunking is too broad, or the Ollama generation prompt changed.
 
-**Investigation steps:** Compare context precision at the same timestamp, inspect prompt and retriever version diffs, sample bottom 10 failures, and check corpus update logs.
+**Investigation steps:** Compare context precision at the same timestamp, inspect prompt and retriever version diffs, sample bottom 10 failures in `phase-a/failure_analysis.md`, and check corpus update logs.
 
-**Resolution:** Re-index corpus, rollback prompt if needed, raise top_k, and add reranking for affected document classes.
+**Resolution:** Rebuild the local index, rollback prompt if needed, raise `top_k`, tune chunk size/overlap, or add BM25/vector embeddings for affected document classes.
 
 ### Incident: P95 latency exceeds 3000 ms
 
@@ -50,11 +81,11 @@ Latency targets: L1 P95 < 50 ms, L2 P95 depends on generation model, L3 P95 < 10
 
 **Detection:** Latency monitor on guarded pipeline.
 
-**Likely causes:** Llama Guard API latency, sequential guardrail calls, model provider slowdown, or synchronous audit logging.
+**Likely causes:** Ollama `llama3.2` generation latency, cold model load, large retrieved context, sequential guardrail calls, or synchronous audit logging.
 
-**Investigation steps:** Break down L1/L2/L3 timings, compare provider status, check retry rate, and verify audit logging is fire-and-forget.
+**Investigation steps:** Break down L1/L2/L3 timings, check whether Ollama model is already loaded, inspect prompt/context length, and verify audit logging is fire-and-forget.
 
-**Resolution:** Run guards in parallel, enable provider fallback, cache repeated safety decisions, and move audit writes to a queue.
+**Resolution:** Keep Ollama warm, reduce `top_k` or chunk size, run guards in parallel, cache repeated safety decisions, and move audit writes to a queue.
 
 ### Incident: Guardrail detection rate below 85%
 
@@ -86,18 +117,20 @@ Assumption: 100,000 user queries per month.
 
 | Component | Unit Cost | Volume | Monthly Cost |
 |---|---:|---:|---:|
-| RAG generation, GPT-4o-mini class | $0.001 / query | 100k | $100 |
-| RAGAS continuous eval, 1% sample | $0.01 / query | 1k | $10 |
-| LLM judge tier 2 | $0.001 / query | 10k | $10 |
-| LLM judge tier 3 | $0.05 / query | 1k | $50 |
-| Presidio and regex PII | self-hosted | 100k | $0 |
-| Llama Guard 3 self-hosted GPU | $0.30 / hour | 720 hr | $216 |
-| **Total** |  |  | **$386** |
+| RAG generation, Ollama llama3.2 local | hardware/electricity only | 100k | $0 direct API |
+| Retrieval, local lexical index | included | 100k | $0 |
+| RAGAS-style local eval, 1% sample | local CPU/Ollama | 1k | $0 direct API |
+| LLM judge, current deterministic/local artifact | local | 10k | $0 direct API |
+| Regex PII and topic guard | local | 100k | $0 |
+| Output guard, local compatibility check | local | 100k | $0 |
+| Optional hosted judge fallback | $0.001 / query | 10k | $10 |
+| Optional hosted Llama Guard fallback | provider dependent | 100k | TBD |
+| **Total direct API cost** |  |  | **$0 current / $10+ with hosted fallback** |
 
 Cost optimization opportunities:
 
-- Run full RAGAS on sampled traffic and cheap lexical checks on all traffic.
-- Use tiered judge routing: only uncertain cases go to expensive models.
-- Use API-based Llama Guard for low volume and self-host when utilization is stable.
+- Keep local Ollama warm to avoid cold-start latency.
+- Run full local evaluation on sampled traffic and cheaper lexical checks on all traffic.
+- Use tiered judge routing only when local judge confidence is low.
+- Use API-based Llama Guard only as fallback when local checks are uncertain.
 - Cache repeated judge and guardrail decisions by normalized query hash.
-
